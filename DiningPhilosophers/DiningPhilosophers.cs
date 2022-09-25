@@ -17,6 +17,7 @@ public class DiningPhilosophers
 	private System.Timers.Timer timer;
 	public DiningPhilosophers()
 	{
+		// Initialize array of Semaphore _chopsticks, all elements are mutex semaphore and have initial value is 1.
 		_chopsticks = new Semaphore[]
 		{
 			new Semaphore(1,1),
@@ -25,6 +26,7 @@ public class DiningPhilosophers
 			new Semaphore(1,1),
 			new Semaphore(1,1),
 		};
+		// Initialize array of Philosopher
 		_philosophers = new Philosopher[]
 		{
 			new Philosopher() { Id = 0 },
@@ -33,17 +35,20 @@ public class DiningPhilosophers
 			new Philosopher() { Id = 3 },
 			new Philosopher() { Id = 4 }
 		};
+		// Initialize a timer, this timer has interval is 5000ms and auto reset,
+		// whenever timer elapsed, call TimerOnElapsed to display information.
 		timer = new System.Timers.Timer(5000)
 		{
 			AutoReset = true,
 			Enabled = true,
 		};
 		timer.Elapsed += TimerOnElapsed;
-
+		// This logger is used to log to console and log to file.
 		_logger = new LoggerConfiguration()
-			.WriteTo.File("output.txt", rollingInterval: RollingInterval.Day)
+			.WriteTo.File("output.txt", rollingInterval: RollingInterval.Day, outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
 			.WriteTo.Console()
 			.CreateLogger();
+
 		_start = DateTime.Now;
 	}
 
@@ -80,7 +85,7 @@ public class DiningPhilosophers
 			Thread.Sleep(time);
 
 			#endregion
-
+			// After eat, release the chopsticks.
 			_chopsticks[id].Release();
 			_philosophers[id].RightChopstick = null;
 			_chopsticks[(id + 1) % ChopsticksCount].Release();
@@ -95,34 +100,36 @@ public class DiningPhilosophers
 
 	private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
 	{
-		//Console.WriteLine("-----------------------------------------------");
-		_logger.Write(LogEventLevel.Information, "-----------------------------------------------");
+		//_logger.Write(LogEventLevel.Information, "-----------------------------------------------");
 		foreach (Philosopher philosopher in _philosophers)
 		{
 			if (philosopher.IsEating)
 			{
-				// Console.WriteLine("Nhà triết học " + philosopher.Id + " đang ăn. Đũa trái: " + philosopher.LeftChopstick + ", đũa phải: " + philosopher.RightChopstick);
-				_logger.Write(LogEventLevel.Information, "Nhà triết học " + philosopher.Id + " đang ăn. Đũa trái: " + philosopher.LeftChopstick + ", đũa phải: " + philosopher.RightChopstick);
+				_logger.Write(
+					LogEventLevel.Information,
+					"Nhà triết học " + philosopher.Id + " đang ăn. Đũa trái: " + philosopher.LeftChopstick + ", đũa phải: " + philosopher.RightChopstick);
 			}
 			else if (philosopher.LeftChopstick != null)
 			{
-				// Console.WriteLine("Nhà triết học " + philosopher.Id + " đang cầm đũa trái " + philosopher.LeftChopstick + ", chờ đũa phải " + philosopher.ExpectedRightChopstick);
-				_logger.Write(LogEventLevel.Information, "Nhà triết học " + philosopher.Id + " đang cầm đũa trái " + philosopher.LeftChopstick + ", chờ đũa phải " + philosopher.ExpectedRightChopstick);
+				_logger.Write(
+					LogEventLevel.Information,
+					"Nhà triết học " + philosopher.Id + " đang cầm đũa trái " + philosopher.LeftChopstick + ", chờ đũa phải " + philosopher.ExpectedRightChopstick);
 
 			}
 			else if (philosopher.RightChopstick != null)
 			{
-				// Console.WriteLine("Nhà triết học " + philosopher.Id + " đang cầm đũa phải " + philosopher.RightChopstick + ", chờ đũa trái " + philosopher.ExpectedLeftChopstick);
-				_logger.Write(LogEventLevel.Information, "Nhà triết học " + philosopher.Id + " đang cầm đũa phải " + philosopher.RightChopstick + ", chờ đũa trái " + philosopher.ExpectedLeftChopstick);
+				_logger.Write(
+					LogEventLevel.Information,
+					"Nhà triết học " + philosopher.Id + " đang cầm đũa phải " + philosopher.RightChopstick + ", chờ đũa trái " + philosopher.ExpectedLeftChopstick);
 			}
 			else
 			{
-				// Console.WriteLine("Nhà triết học " + philosopher.Id + " đang chờ đũa trái " + philosopher.ExpectedLeftChopstick + ", chờ đũa phải " + philosopher.ExpectedRightChopstick);
-				_logger.Write(LogEventLevel.Information, "Nhà triết học " + philosopher.Id + " đang chờ đũa trái " + philosopher.ExpectedLeftChopstick + ", chờ đũa phải " + philosopher.ExpectedRightChopstick);
+				_logger.Write(
+					LogEventLevel.Information,
+					"Nhà triết học " + philosopher.Id + " đang chờ đũa trái " + philosopher.ExpectedLeftChopstick + ", chờ đũa phải " + philosopher.ExpectedRightChopstick);
 
 			}
 		}
-		//Console.WriteLine("-----------------------------------------------");
 		_logger.Write(LogEventLevel.Information, "-----------------------------------------------");
 	}
 }
