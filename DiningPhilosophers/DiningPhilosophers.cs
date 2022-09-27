@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using Serilog.Events;
 using System;
+using System.Text;
 using System.Threading;
 using System.Timers;
 
@@ -20,11 +21,11 @@ public class DiningPhilosophers
 		// Initialize array of Semaphore _chopsticks, all elements are mutex semaphore and have initial value is 1.
 		_chopsticks = new Semaphore[]
 		{
-			new Semaphore(1,1),
-			new Semaphore(1,1),
-			new Semaphore(1,1),
-			new Semaphore(1,1),
-			new Semaphore(1,1),
+			new Semaphore(initialCount: 1,maximumCount: 1),
+			new Semaphore(initialCount: 1,maximumCount: 1),
+			new Semaphore(initialCount: 1,maximumCount: 1),
+			new Semaphore(initialCount: 1,maximumCount: 1),
+			new Semaphore(initialCount: 1,maximumCount: 1),
 		};
 		// Initialize array of Philosopher
 		_philosophers = new Philosopher[]
@@ -57,7 +58,7 @@ public class DiningPhilosophers
 	public void Run(object? num)
 	{
 		timer.Start();
-		int id = (int)num;
+		int id = (int)num!;
 		do
 		{
 			if (id % 2 == 1)
@@ -100,6 +101,8 @@ public class DiningPhilosophers
 
 	private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
 	{
+		Console.OutputEncoding = Encoding.UTF8;
+		Console.InputEncoding = Encoding.UTF8;
 		//_logger.Write(LogEventLevel.Information, "-----------------------------------------------");
 		foreach (Philosopher philosopher in _philosophers)
 		{

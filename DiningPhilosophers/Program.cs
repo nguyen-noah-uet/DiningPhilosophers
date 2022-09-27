@@ -6,6 +6,7 @@ public class Program
 {
 	static void Main(string[] args)
 	{
+
 		var diningPhilosophers = new DiningPhilosophers();
 		Thread philosopher0 = new Thread(new ParameterizedThreadStart(diningPhilosophers.Run));
 		Thread philosopher1 = new Thread(new ParameterizedThreadStart(diningPhilosophers.Run));
